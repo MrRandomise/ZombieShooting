@@ -23,6 +23,7 @@ namespace Visual
         private void OnFire()
         {
             _fireParticle.transform.position = _character.FirePoint.position;
+            _fireParticle.transform.rotation = _character.FirePoint.rotation;
             _fireParticle.Play();
         }
 

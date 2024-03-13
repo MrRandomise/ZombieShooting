@@ -57,6 +57,10 @@ namespace Visual
             {
                 _stepAudio.Play();
             }
+            if(eventName == "stop_reload")
+            {
+                _reloadAmoAudio.Stop();
+            }
         }
 
         private void OnDeath()

@@ -1,4 +1,6 @@
 ﻿using Atomic;
+using UnityEngine;
+using Visual;
 
 namespace Logics
 {

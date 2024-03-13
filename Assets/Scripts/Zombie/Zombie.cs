@@ -3,17 +3,21 @@ using Core;
 using Atomic;
 using Logics;
 using UnityEngine;
+using Visual;
 
 namespace ZombieModel
 {
     public class Zombie : MonoBehaviour, ICharacter
     {
         public Transform PlayerTransform;
+        [SerializeField] private ZombieHands _rightHand;
+        [SerializeField] private ZombieHands _leftHand;
+        [SerializeField] private AnimatorDispatcher _animatorDispatcher;
+
         public AtomicVariable<int> Health;
         public AtomicVariable<int> Damage;
         public AtomicVariable<bool> IsAlive;
         public AtomicVariable<float> Speed;
-        public AtomicVariable<float> AttackTimeout;
         public AtomicVariable<float> AttackDistance;
         public AtomicVariable<bool> AttackDistanceReached;
         public AtomicVariable<Vector3> MoveDirection;
@@ -27,30 +31,35 @@ namespace ZombieModel
         public AtomicEvent OnAttackRequested;
         public AtomicEvent OnHit;
         public AtomicEvent DeleteMe;
-
+        
+        private AtomicEvent _rightHandCollision;
+        private AtomicEvent _leftHandCollision;
         private readonly List<IEventLogics> _logics = new();
         private Movement _movement;
+        private ZombieAttack _attack;
         private TargetMovement _targetMovement;
         private ZombieCanMove _zombieCanMove;
-        private ZombieAttack _attack;
         private CheckAttackDistance _attackDistanceCheck;
         private ZombieCanAttack _canAttack;
         private DecayInactiveObject _decayInactiveObject;
 
+
         private void Awake()
         {
             PlayerTransform = GameObject.FindWithTag("Player").transform;
-            var zombyTransform = transform;
+            _rightHandCollision = _rightHand._collision;
+            _leftHandCollision = _leftHand._collision;
             _attackDistanceCheck = new CheckAttackDistance(AttackDistance, IsAlive,
-                AttackDistanceReached, PlayerTransform, zombyTransform);
+                AttackDistanceReached, PlayerTransform, transform);
             _canAttack = new ZombieCanAttack(IsAlive, CanAttack, AttackDistanceReached);
-            _movement = new Movement(CanMove, Speed, MoveDirection, zombyTransform);
-            _targetMovement = new TargetMovement(PlayerTransform, MoveDirection, zombyTransform, IsAlive);
+            _movement = new Movement(CanMove, Speed, MoveDirection, transform);
+            _targetMovement = new TargetMovement(PlayerTransform, MoveDirection, transform, IsAlive);
             _zombieCanMove = new ZombieCanMove(IsAlive, CanMove, IsAttacking, AttackDistanceReached);
-            _attack = new ZombieAttack(CanAttack, IsAttacking, AttackTimeout, OnAttackRequested, OnHit);
+            _attack = new ZombieAttack(CanAttack, IsAttacking, OnAttackRequested);
             _logics.Add(new TakeDamageEvent(Health, OnTakeDamage));
             _logics.Add(new DeathEvent(Health, IsAlive, OnDeath));
             _logics.Add(new DealDamage(PlayerTransform, Damage, OnHit));
+            _logics.Add(new ZombieAttackHit(CanAttack, OnHit, _leftHandCollision, _rightHandCollision, IsAttacking, _animatorDispatcher));
             _decayInactiveObject = new DecayInactiveObject(DecayTimeout, DeleteMe, OnDeath);
             _logics.Add(_decayInactiveObject);
             _logics.Add(new DeleteObject(DeleteMe, transform));

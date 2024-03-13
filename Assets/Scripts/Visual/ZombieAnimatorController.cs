@@ -1,5 +1,4 @@
 using Atomic;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using ZombieModel;
 
@@ -7,6 +6,10 @@ namespace Visual
 {
     public sealed class ZombieAnimatorController
     {
+        private static readonly int MainState = Animator.StringToHash("State");
+        private const int _idle = 0;
+        private const int _move = 1;
+        private const int _attack = 2;
         private readonly AtomicVariable<Vector3> _moveDirection;
         private readonly AtomicVariable<bool> _isAttacking;
         private bool _isAlive;
@@ -30,20 +33,18 @@ namespace Visual
             _isAlive = false;
         }
 
-        private void GetMainStateValue()
+        private int GetMainStateValue()
         {
-            if (_isAttacking.Value) 
-                _animator.SetTrigger("Attack");
+            if (_isAttacking.Value) return _attack;
             if (_moveDirection.Value == Vector3.zero || !_canMove.Value)
-                _animator.SetInteger("Move", 0);
-            else
-                _animator.SetInteger("Move", 1);
+                return _idle;
+            return _move;
         }
 
         public void Update()
         {
             if(!_isAlive) return;
-            GetMainStateValue();
+            _animator.SetInteger(MainState, GetMainStateValue());
         }
 
         public void OnEnable()

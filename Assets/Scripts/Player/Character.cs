@@ -10,6 +10,7 @@ namespace CharacterModel
 {
     public sealed class Character : MonoBehaviour, ICharacter
     {
+        public AtomicVariable<GameObject> _weapon;
         public AtomicVariable<int> Health;
         public AtomicVariable<int> AmoAmount;
         public AtomicVariable<int> MaxAmoAmount;
@@ -38,8 +39,9 @@ namespace CharacterModel
             _logics.Add(new CharacterCanMove(CanMove, IsAlive));
             _logics.Add(new TakeDamageEvent(Health, OnTakeDamage));
             _logics.Add(new DeathEvent(Health,IsAlive, OnDeath));
-            _logics.Add(new CharacterShootEvent(OnFireRequested, FirePoint, Bullet, transform, CanShoot, OnFire));
-            _logics.Add(new RealoadAmo(AmoAmount, IsAlive, OnFire, OnReloadAmo, MaxAmoAmount, animatorDispatcher));
+            _logics.Add(new CharacterShootEvent(OnFireRequested, FirePoint, Bullet, CanShoot, OnFire));
+            _logics.Add(new RealoadAmo(AmoAmount, IsAlive, OnReloadAmo, OnFireRequested, MaxAmoAmount, animatorDispatcher));
+            _logics.Add(new DropGun(_weapon, OnDeath));
             var playerTransform = transform;
             _movement = new Movement(CanMove, Speed, MoveDirection, playerTransform);
             _rotateCharacter = new RotateCharacter(IsAlive, playerTransform);

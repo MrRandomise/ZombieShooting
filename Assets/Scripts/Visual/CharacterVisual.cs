@@ -1,3 +1,4 @@
+using Atomic;
 using CharacterModel;
 using UnityEngine;
 
@@ -7,12 +8,13 @@ namespace Visual
     {
         [SerializeField] private Character _character;
         [SerializeField] private Animator _animator;
+        [SerializeField] private AnimatorDispatcher _dispatcher;
         private PlayerAnimatorController _characterAnimatorController;
 
         private void Awake()
         {
             _characterAnimatorController = new PlayerAnimatorController(_character.MoveDirection, _character.CanMove, _animator,
-                _character.OnDeath, _character.OnReloadAmo);
+                _character.OnDeath, _character.OnReloadAmo, _dispatcher, _character.OnTakeDamage);
         }
 
         private void OnEnable()

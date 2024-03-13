@@ -11,8 +11,10 @@ namespace Visual
         private readonly AtomicEvent _onDeath;
         private readonly Animator _animator;
         private readonly AtomicEvent _onReload;
+        private readonly AnimatorDispatcher _animatorDispatcher;
+        private readonly AtomicEvent<int> _onDamage;
 
-        public PlayerAnimatorController(AtomicVariable<Vector3> moveDirection, AtomicVariable<bool> canMove, Animator animator, AtomicEvent onDeath, AtomicEvent onReload)
+        public PlayerAnimatorController(AtomicVariable<Vector3> moveDirection, AtomicVariable<bool> canMove, Animator animator, AtomicEvent onDeath, AtomicEvent onReload, AnimatorDispatcher animatorDispatcher, AtomicEvent<int> onDamage)
         {
             _moveDirection = moveDirection;
             _canMove = canMove;
@@ -20,17 +22,36 @@ namespace Visual
             _animator = animator;
             _onReload = onReload;
             _isAlive = true;
+            _animatorDispatcher = animatorDispatcher;
+            _onDamage = onDamage;
         }
 
         private void DieAnimator()
         {
             _animator.SetTrigger("Death");
+            _animator.SetInteger("Guns", 0);
             _isAlive = false;
         }
 
         private void ReloadAnimator()
         {
-            _animator.SetTrigger("Reload");
+            if (!_animator.GetBool("Reload"))
+            {
+                _animator.SetBool("Reload", true);
+            }   
+        }
+
+        private void Hit(int damage)
+        {
+            _animator.SetTrigger("Hit");
+        }
+
+        private void OnAnimatorEvent(string eventName)
+        {
+            if (eventName == "Reload")
+            {
+                _animator.SetBool("Reload", false);
+            }
         }
 
         private int GetMainStateValue()
@@ -50,12 +71,16 @@ namespace Visual
         {
             _onDeath.Subscribe(DieAnimator);
             _onReload.Subscribe(ReloadAnimator);
+            _onDamage.Subscribe(Hit);
+            _animatorDispatcher.OnEventReceived += OnAnimatorEvent;
         }
 
         public void OnDisable()
         {
             _onDeath.UnSubscribe(DieAnimator);
             _onReload.UnSubscribe(ReloadAnimator);
+            _onDamage.UnSubscribe(Hit);
+            _animatorDispatcher.OnEventReceived -= OnAnimatorEvent;
         }
     }
 }

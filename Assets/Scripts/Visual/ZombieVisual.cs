@@ -1,3 +1,4 @@
+using Atomic;
 using UnityEngine;
 using ZombieModel;
 

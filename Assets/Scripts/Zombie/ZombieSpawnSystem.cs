@@ -3,9 +3,8 @@ using Atomic;
 using Logics;
 using Mechanics;
 using Zenject;
-using ZombieModel;
 
-namespace Zomby
+namespace ZombieModel
 {
     public sealed class ZombieSpawnSystem : ITickable, IDisposable
     {

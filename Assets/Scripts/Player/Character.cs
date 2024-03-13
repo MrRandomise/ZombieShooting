@@ -4,6 +4,7 @@ using Logics;
 using BulletCore;
 using UnityEngine;
 using Core;
+using Visual;
 
 namespace CharacterModel
 {
@@ -15,9 +16,8 @@ namespace CharacterModel
         public AtomicVariable<bool> IsAlive;
         public AtomicVariable<float> Speed;
         public Transform FirePoint;
-        public Bullet Bullet;
+        public BulletLogic Bullet;
         public AtomicVariable<float> ShootTimeout;
-        public AtomicVariable<int> AddAmoTimeout;
         public AtomicVariable<Vector3> MoveDirection;
         public AtomicVariable<bool> CanMove;
         public AtomicVariable<bool> CanShoot;
@@ -26,26 +26,25 @@ namespace CharacterModel
         public AtomicEvent OnFireRequested;
         public AtomicEvent OnFire;
         public AtomicEvent OnReloadAmo;
-        
+        public AnimatorDispatcher animatorDispatcher;
+
         private readonly List<IEventLogics> _logics = new();
         private Movement _movement;
         private RotateCharacter _rotateCharacter;
-        private CanShootEvent _canShootEvent;
-        private AddAmo _addAmoMechanic;
+        private CharacterCanShootEvent _canShootEvent;
 
         private void Awake()
         {
-            _logics.Add(new CharacterCant(CanMove, IsAlive));
+            _logics.Add(new CharacterCanMove(CanMove, IsAlive));
             _logics.Add(new TakeDamageEvent(Health, OnTakeDamage));
             _logics.Add(new DeathEvent(Health,IsAlive, OnDeath));
-            _logics.Add(new ShootEvent(OnFireRequested, FirePoint, Bullet, transform, CanShoot, OnFire));
+            _logics.Add(new CharacterShootEvent(OnFireRequested, FirePoint, Bullet, transform, CanShoot, OnFire));
+            _logics.Add(new RealoadAmo(AmoAmount, IsAlive, OnFire, OnReloadAmo, MaxAmoAmount, animatorDispatcher));
             var playerTransform = transform;
             _movement = new Movement(CanMove, Speed, MoveDirection, playerTransform);
             _rotateCharacter = new RotateCharacter(IsAlive, playerTransform);
-            _canShootEvent = new CanShootEvent(CanShoot, AmoAmount, ShootTimeout, OnFire, IsAlive);
+            _canShootEvent = new CharacterCanShootEvent(CanShoot, AmoAmount, ShootTimeout, OnFire, IsAlive);
             _logics.Add(_canShootEvent);
-            _addAmoMechanic = new AddAmo(AddAmoTimeout, AmoAmount, IsAlive, OnReloadAmo, MaxAmoAmount);
-            _addAmoMechanic.Awake();
             IsAlive.Value = true;
         }
         

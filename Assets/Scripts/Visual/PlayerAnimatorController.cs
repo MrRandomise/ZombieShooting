@@ -10,20 +10,27 @@ namespace Visual
         private readonly AtomicVariable<bool> _canMove;
         private readonly AtomicEvent _onDeath;
         private readonly Animator _animator;
+        private readonly AtomicEvent _onReload;
 
-        public PlayerAnimatorController(AtomicVariable<Vector3> moveDirection, AtomicVariable<bool> canMove, Animator animator, AtomicEvent onDeath)
+        public PlayerAnimatorController(AtomicVariable<Vector3> moveDirection, AtomicVariable<bool> canMove, Animator animator, AtomicEvent onDeath, AtomicEvent onReload)
         {
             _moveDirection = moveDirection;
             _canMove = canMove;
             _onDeath = onDeath;
             _animator = animator;
+            _onReload = onReload;
             _isAlive = true;
         }
 
-        private void Die()
+        private void DieAnimator()
         {
             _animator.SetTrigger("Death");
             _isAlive = false;
+        }
+
+        private void ReloadAnimator()
+        {
+            _animator.SetTrigger("Reload");
         }
 
         private int GetMainStateValue()
@@ -41,12 +48,14 @@ namespace Visual
 
         public void OnEnable()
         {
-            _onDeath.Subscribe(Die);
+            _onDeath.Subscribe(DieAnimator);
+            _onReload.Subscribe(ReloadAnimator);
         }
 
         public void OnDisable()
         {
-            _onDeath.UnSubscribe(Die);
+            _onDeath.UnSubscribe(DieAnimator);
+            _onReload.UnSubscribe(ReloadAnimator);
         }
     }
 }

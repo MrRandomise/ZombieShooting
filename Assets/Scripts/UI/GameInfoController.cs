@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CharacterModel;
-using Zomby;
+using ZombieModel;
 
 namespace UI
 {
@@ -33,17 +33,17 @@ namespace UI
 
         private void HitPointsChanged(int value)
         {
-            GetView(TextTypes.HitPoints).SetText($"HIP POINTS: {value}");
+            GetView(TextTypes.HitPoints).SetText($"{value} X");
         }
 
         private void BulletAmountChanged(int value)
         {
-            GetView(TextTypes.Bullet).SetText($"BULLETS: {value}/{_character.MaxAmoAmount.Value}");
+            GetView(TextTypes.Bullet).SetText($"{value}/{_character.MaxAmoAmount.Value}");
         }
 
         private void KillsChanged(int value)
         {
-            GetView(TextTypes.Kills).SetText($"KILLS: {value}");
+            GetView(TextTypes.Kills).SetText($"{value} X ");
         }
 
         private UITextView GetView(TextTypes type)

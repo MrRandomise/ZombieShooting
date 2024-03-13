@@ -12,7 +12,7 @@ namespace Visual
         private void Awake()
         {
             _characterAnimatorController = new PlayerAnimatorController(_character.MoveDirection, _character.CanMove, _animator,
-                _character.OnDeath);
+                _character.OnDeath, _character.OnReloadAmo);
         }
 
         private void OnEnable()

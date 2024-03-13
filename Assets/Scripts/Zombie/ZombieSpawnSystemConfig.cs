@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Atomic;
 using UnityEngine;
 
-namespace Zomby
+namespace ZombieModel
 {
     public sealed class ZombieSpawnSystemConfig : MonoBehaviour
     {

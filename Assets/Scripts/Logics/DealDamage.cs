@@ -17,7 +17,6 @@ namespace Logics
             _onHit = onHit;
         }
 
-
         public void OnEnable()
         {
             _onHit.Subscribe(DealDamageLogic);

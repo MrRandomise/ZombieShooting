@@ -32,9 +32,9 @@ namespace ZombieModel
         private Movement _movement;
         private TargetMovement _targetMovement;
         private ZombieCanMove _zombieCanMove;
-        private Attack _attack;
+        private ZombieAttack _attack;
         private CheckAttackDistance _attackDistanceCheck;
-        private CanAttack _canAttack;
+        private ZombieCanAttack _canAttack;
         private DecayInactiveObject _decayInactiveObject;
 
         private void Awake()
@@ -43,11 +43,11 @@ namespace ZombieModel
             var zombyTransform = transform;
             _attackDistanceCheck = new CheckAttackDistance(AttackDistance, IsAlive,
                 AttackDistanceReached, PlayerTransform, zombyTransform);
-            _canAttack = new CanAttack(IsAlive, CanAttack, AttackDistanceReached);
+            _canAttack = new ZombieCanAttack(IsAlive, CanAttack, AttackDistanceReached);
             _movement = new Movement(CanMove, Speed, MoveDirection, zombyTransform);
             _targetMovement = new TargetMovement(PlayerTransform, MoveDirection, zombyTransform, IsAlive);
             _zombieCanMove = new ZombieCanMove(IsAlive, CanMove, IsAttacking, AttackDistanceReached);
-            _attack = new Attack(CanAttack, IsAttacking, AttackTimeout, OnAttackRequested, OnHit);
+            _attack = new ZombieAttack(CanAttack, IsAttacking, AttackTimeout, OnAttackRequested, OnHit);
             _logics.Add(new TakeDamageEvent(Health, OnTakeDamage));
             _logics.Add(new DeathEvent(Health, IsAlive, OnDeath));
             _logics.Add(new DealDamage(PlayerTransform, Damage, OnHit));

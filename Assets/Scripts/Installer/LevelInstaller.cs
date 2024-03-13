@@ -1,12 +1,11 @@
 using System;
 using Core;
 using CharacterModel;
-using UI;
 using UnityEngine;
 using Zenject;
-using Zomby;
+using ZombieModel;
 
-namespace ZInstaller
+namespace Installer
 {
     public sealed class LevelInstaller : MonoInstaller
     {

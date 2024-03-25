@@ -1,9 +1,5 @@
 *.exe
-*.dll
-*.csproj
-*.sln
 Logs/
 Library/
-UserSettings/
-Library/
 Temp/
+[Oo]bj/
